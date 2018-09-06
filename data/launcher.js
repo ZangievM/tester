@@ -17,15 +17,15 @@ function execute(command) {
   })
   
 }
-async function installApk(path='C:\\Users\\zmar1\\Documents\\GitHub\\xogameAndroid\\app\\build\\outputs\\apk\\debug\\app-debug.apk'){
+async function installApk(path){
     let result = await execute(`adb install  -t -r  ${path}`)
     return result
 }
-async function uninstallApk(packageName = 'zm.xosocket'){
+async function uninstallApk(packageName){
   let result = await execute(`adb uninstall ${packageName}`)
   return result
 }
-async function launchTest(packageName = 'zm.xosocket.test') {
+async function launchTest(packageName) {
   let result = await execute(`adb shell am instrument -w ${packageName}/android.support.test.runner.AndroidJUnitRunner`)
   return result
 }
