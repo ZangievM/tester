@@ -1,2 +1,2 @@
 # tester
-Client that launch test on Android devices
+Crossplatform client for launching tests on Android devices
