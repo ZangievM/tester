@@ -4,12 +4,12 @@ function execute(command) {
   return new Promise((resolve,reject)=>{
     exec(command,
     (error, stdout, stderr) => {
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
+      console.log(`stdout: ${stdout.trim()}`);
+      console.log(`stderr: ${stderr.trim()}`);
       console.log(`exec error: ${error}`);
       resolve( {
-        stdout: stdout,
-        stderr: stderr,
+        stdout: stdout.trim(),
+        stderr: stderr.trim(),
         error:error
       })
 
@@ -57,4 +57,7 @@ async function getConnectedDevices(){
   }
   return result
 
+}
+module.exports = {
+  getConnectedDevices
 }
