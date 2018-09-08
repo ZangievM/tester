@@ -59,13 +59,13 @@ async function getConnectedDevices(){
   return result
 
 }
-async function run(device){
+async function run(device,apkPath,testApkPath,packageName,testPackageName){
   let start = await execute('adb start-server')
-  let appInstall = await installApk(device,'C:\\Users\\zmar1\\Documents\\GitHub\\xogameAndroid\\app\\build\\outputs\\apk\\debug\\app-debug.apk')
-  let testAppInstall = await installApk(device,"C:\\Users\\zmar1\\Documents\\GitHub\\xogameAndroid\\app\\build\\outputs\\apk\\androidTest\\debug\\app-debug-androidTest.apk")
-  let testLaunch = await launchTest(device,'zm.xosocket.test')
-  let uninstallApp = await uninstallApk(device,'zm.xosocket')
-  let uninstallTestApp = await uninstallApk(device,'zm.xosocket.test')
+  let appInstall = await installApk(device,apkPath)
+  let testAppInstall = await installApk(device,testApkPath)
+  let testLaunch = await launchTest(device,testPackageName)
+  let uninstallApp = await uninstallApk(device,packageName)
+  let uninstallTestApp = await uninstallApk(device,testPackageName)
   return [start,appInstall,testAppInstall,testLaunch,uninstallApp,uninstallTestApp]
 }
 
