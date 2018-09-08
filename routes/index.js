@@ -15,8 +15,9 @@ router.post('/', function(req, res, next) {
       return
       
     }
-    // var oldpath = files.file.path;
-    // var newpath = __dirname + files.file.name;
+    
+    var filePath = files.file.path;
+    var testFilePath = files.testFile.path;
     // fs.rename(oldpath, newpath, function (err) {
     //   if (err) throw err;
     //   res.write('File uploaded and moved!');

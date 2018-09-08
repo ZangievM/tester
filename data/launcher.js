@@ -1,12 +1,12 @@
 const exec = require('child_process').exec
-
+var queue = []
 function execute(command) {
   return new Promise((resolve,reject)=>{
-    exec(command,
+    exec(command, {maxBuffer: 1024 * 2048},
     (error, stdout, stderr) => {
       console.log(`stdout: ${stdout.trim()}`);
       console.log(`stderr: ${stderr.trim()}`);
-      console.log(`exec error: ${error}`);
+      console.log(`error: ${error}`);
       resolve( {
         stdout: stdout.trim(),
         stderr: stderr.trim(),
@@ -17,16 +17,16 @@ function execute(command) {
   })
   
 }
-async function installApk(path){
-    let result = await execute(`adb install  -t -r  ${path}`)
+async function installApk(device,path){
+    let result = await execute(`adb -s ${device} install  -t -r  ${path}`)
     return result
 }
-async function uninstallApk(packageName){
-  let result = await execute(`adb uninstall ${packageName}`)
+async function uninstallApk(device,packageName){
+  let result = await execute(`adb -s ${device} uninstall ${packageName}`)
   return result
 }
-async function launchTest(packageName) {
-  let result = await execute(`adb shell am instrument -w ${packageName}/android.support.test.runner.AndroidJUnitRunner`)
+async function launchTest(device, packageName) {
+  let result = await execute(`adb -s ${device} shell am instrument -w ${packageName}/android.support.test.runner.AndroidJUnitRunner`)
   return result
 }
 async function getConnectedDevices(){
@@ -46,6 +46,7 @@ async function getConnectedDevices(){
         let sdk = await execute(` adb -s ${element[0]} shell getprop ro.build.version.sdk`)
         sdk= sdk.stdout.split('\r\n')[0]
         result.push({
+          id:element[0],
           manufacturer:manufacturer,
           model:model,
           os: os,
@@ -56,6 +57,19 @@ async function getConnectedDevices(){
     }
   }
   return result
+
+}
+async function run(device){
+  let start = await execute('adb start-server')
+  let appInstall = await installApk(device,'C:\\Users\\zmar1\\Documents\\GitHub\\xogameAndroid\\app\\build\\outputs\\apk\\debug\\app-debug.apk')
+  let testAppInstall = await installApk(device,"C:\\Users\\zmar1\\Documents\\GitHub\\xogameAndroid\\app\\build\\outputs\\apk\\androidTest\\debug\\app-debug-androidTest.apk")
+  let testLaunch = await launchTest(device,'zm.xosocket.test')
+  let uninstallApp = await uninstallApk(device,'zm.xosocket')
+  let uninstallTestApp = await uninstallApk(device,'zm.xosocket.test')
+  return [start,appInstall,testAppInstall,testLaunch,uninstallApp,uninstallTestApp]
+}
+
+function enqueue(){
 
 }
 module.exports = {
