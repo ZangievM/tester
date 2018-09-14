@@ -26,8 +26,8 @@ router.post('/', function(req, res, next) {
     fs.renameSync(files.file.path, filePath)
     fs.renameSync(files.testFile.path, testFilePath)
     launcher.run(devices[0],filePath,testFilePath)
-    .then(res=>{
-      console.log(res);
+    .then(result=>{
+      res.end()
     })
     
 

@@ -87,11 +87,16 @@ async function run(device, apkPath, testApkPath) {
   return [start, appInstall, testAppInstall, testLaunch, uninstallApp, uninstallTestApp]
 }
 
-async function enqueue() {
-
+async function enqueue(devices, apkPath, testApkPath) {
+  let resultArray = []
+  for (const item of devices) {
+    let tmpResult = await run(item,apkPath,testApkPath)
+    resultArray.push(tmpResult)
+  }
+  return resultArray
 }
 enqueue()
 module.exports = {
   getConnectedDevices,
-  run
+  enqueue
 }
