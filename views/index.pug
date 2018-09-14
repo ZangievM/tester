@@ -1,10 +1,14 @@
 extends layout
 
 block content
+  script.
+    $('select').selectpicker();
   form(action="?", method="post" enctype="multipart/form-data")
-    label Package name of your app
+    label Select devices
     br
-    input(type="text" name="package" placeholder="com.google.android" required) 
+    select(name="devices" class="selectpicker" multiple data-live-search="true" required)
+      for value in devices
+        option(value=value.id) #{`${value.manufacturer} ${value.model} (Android ${value.os}, SDK ${value.sdk})`}
     br
     br
     label Application apk file
@@ -14,7 +18,7 @@ block content
     br
     label Testing apk file
     br
-    input(type="file", name="test_file" required)
+    input(type="file", name="testFile" required)
     br
     br
     input(type="submit")

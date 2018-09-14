@@ -69,7 +69,11 @@ async function getPackageNameOfApp(path) {
   let androidHome = process.env.ANDROID_HOME + '\\build-tools\\'
   let files = fs.readdirSync(androidHome)
   androidHome += files[0]
-  return await execute('.\\aapt dump badging C:\\Users\\zmar1\\Documents\\GitHub\\xogameAndroid\\app\\build\\outputs\\apk\\androidTest\\debug\\app-debug-androidTest.apk', androidHome)
+  let res = await execute(`.\\aapt dump badging ${path}` , androidHome)
+  let package = res.stdout.split(/(package: name=)|(')|(\s)/).filter(element=>{
+    if(element && element.length>1 && element!='\'') return element
+  })[1]
+  return package
 }
 async function run(device, apkPath, testApkPath) {
   let packageName = await getPackageNameOfApp(apkPath)
@@ -88,5 +92,6 @@ async function enqueue() {
 }
 enqueue()
 module.exports = {
-  getConnectedDevices
+  getConnectedDevices,
+  run
 }

@@ -6,7 +6,11 @@ var formidable = require('formidable')
 var launcher = require('../data/launcher')
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  launcher.getConnectedDevices()
+  .then(result=>{
+    res.render('index', { title: 'Express',devices:result });
+  })
+  
 });
 router.post('/', function(req, res, next) {
   var form = new formidable.IncomingForm();
@@ -16,14 +20,16 @@ router.post('/', function(req, res, next) {
       return
       
     }
+    let devices = [].concat(fields.devices)
+    var filePath = files.file.path+'.apk';
+    var testFilePath = files.testFile.path+'.apk';
+    fs.renameSync(files.file.path, filePath)
+    fs.renameSync(files.testFile.path, testFilePath)
+    launcher.run(devices[0],filePath,testFilePath)
+    .then(res=>{
+      console.log(res);
+    })
     
-    var filePath = files.file.path;
-    var testFilePath = files.testFile.path;
-    // fs.rename(oldpath, newpath, function (err) {
-    //   if (err) throw err;
-    //   res.write('File uploaded and moved!');
-    //   res.end();
-    // })
 
 
   })
