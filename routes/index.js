@@ -25,9 +25,9 @@ router.post('/', function(req, res, next) {
     var testFilePath = files.testFile.path+'.apk';
     fs.renameSync(files.file.path, filePath)
     fs.renameSync(files.testFile.path, testFilePath)
-    launcher.run(devices[0],filePath,testFilePath)
+    launcher.enqueue(devices,filePath,testFilePath)
     .then(result=>{
-      res.end()
+      res.json(result)
     })
     
 

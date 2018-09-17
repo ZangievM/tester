@@ -1,9 +1,5 @@
 const exec = require('child_process').exec
-var database = require('./database')
 const fs = require('fs')
-const util = require('util')
-let executor = util.promisify(exec)
-var queue = []
 
 function execute(command, cwd) {
   let options = {
@@ -12,15 +8,15 @@ function execute(command, cwd) {
   if (cwd) {
     command = `cd ${cwd} & ${command}`
   }
-  return executor(command, options).then(output => {
-    console.log(output)
-    return output
-
-  }).catch(error => {
-    return error
-
-  })
-
+  return new Promise((resolve,reject)=>{
+    exec(command, options,(error,stdout,stderr)=>{
+      resolve({
+        stdout:stdout,
+        stderr:stderr,
+        error:error
+      })
+    })  
+  }) 
 }
 async function installApk(device, path) {
   let result = await execute(`adb -s ${device} install  -t -r  ${path}`)
@@ -95,7 +91,6 @@ async function enqueue(devices, apkPath, testApkPath) {
   }
   return resultArray
 }
-enqueue()
 module.exports = {
   getConnectedDevices,
   enqueue
