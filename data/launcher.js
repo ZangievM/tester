@@ -1,5 +1,6 @@
 const exec = require('child_process').exec
 const fs = require('fs')
+const spoonPath = __dirname.replace('data','helpers')
 
 function execute(command, cwd) {
   let options = {
