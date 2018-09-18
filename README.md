@@ -1,5 +1,5 @@
 # Tester
-Tester is a clossplatform client for launching instrumented tests on Android devices.
+Tester is a clossplatform client for launching distributed instrumented tests on Android devices.
 
 It is an early prototype, but in short time it will be ready to use!
 
