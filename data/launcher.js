@@ -3,21 +3,22 @@ const fs = require('fs')
 const path = require('path')
 const uuid = require('uuid').v1
 const util = require('util')
+const fileSystem = require('./fileSystem')
 const mkdir = util.promisify(fs.mkdir)
 var spoonPath = __dirname.replace('data','helpers')+'\\'
+var cachePath = ''
 const parseSpoonPath = path.parse(spoonPath)
-console.log(parseSpoonPath.root[0].toUpperCase());
 
 if(parseSpoonPath.root[0]>='a' && parseSpoonPath.root[0]<='z') 
 spoonPath = spoonPath.replace(parseSpoonPath.root[0],parseSpoonPath.root[0].toUpperCase())
+cachePath = spoonPath.replace('helpres','cache')
 
 function execute(command, cwd) {
   let options = {
     maxBuffer: 1024 * 2048
   }
   if (cwd) {
-    // command = `cd ${cwd} & ${command}`
-    options.cwd = cwd
+    command = `cd ${cwd} & ${command}`
   }
   return new Promise((resolve,reject)=>{
     exec(command, options,(error,stdout,stderr)=>{
@@ -42,11 +43,8 @@ async function launchTest(device, packageName) {
   return result
 }
 async function launchTestOnSpoon(device,apk,testApk){
-  let serial = '-serial '+device+' --shard'
-  let id = spoonPath+uuid()
-  let q = await mkdir(id)
-  let output = id
-  let result = await execute(`java -jar ${spoonPath} spoon-runner-1.7.1-jar-with-dependencies.jar --apk ${apk} --test-apk ${testApk} ${serial} -output ${id}`)
+  let output = spoonPath+uuid()
+  let result = await execute(`java -jar spoon-runner-1.7.1-jar-with-dependencies.jar --apk ${apk} --test-apk ${testApk} -serial ${device} --shard --output ${output}`,spoonPath)
   return result
 }
 async function getConnectedDevices() {
