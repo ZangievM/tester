@@ -1,13 +1,23 @@
 const exec = require('child_process').exec
 const fs = require('fs')
-const spoonPath = __dirname.replace('data','helpers')
+const path = require('path')
+const uuid = require('uuid').v1
+const util = require('util')
+const mkdir = util.promisify(fs.mkdir)
+var spoonPath = __dirname.replace('data','helpers')+'\\'
+const parseSpoonPath = path.parse(spoonPath)
+console.log(parseSpoonPath.root[0].toUpperCase());
+
+if(parseSpoonPath.root[0]>='a' && parseSpoonPath.root[0]<='z') 
+spoonPath = spoonPath.replace(parseSpoonPath.root[0],parseSpoonPath.root[0].toUpperCase())
 
 function execute(command, cwd) {
   let options = {
     maxBuffer: 1024 * 2048
   }
   if (cwd) {
-    command = `cd ${cwd} & ${command}`
+    // command = `cd ${cwd} & ${command}`
+    options.cwd = cwd
   }
   return new Promise((resolve,reject)=>{
     exec(command, options,(error,stdout,stderr)=>{
@@ -29,6 +39,14 @@ async function uninstallApk(device, packageName) {
 }
 async function launchTest(device, packageName) {
   let result = await execute(`adb -s ${device} shell am instrument -w ${packageName}/android.support.test.runner.AndroidJUnitRunner`)
+  return result
+}
+async function launchTestOnSpoon(device,apk,testApk){
+  let serial = '-serial '+device+' --shard'
+  let id = spoonPath+uuid()
+  let q = await mkdir(id)
+  let output = id
+  let result = await execute(`java -jar ${spoonPath} spoon-runner-1.7.1-jar-with-dependencies.jar --apk ${apk} --test-apk ${testApk} ${serial} -output ${id}`)
   return result
 }
 async function getConnectedDevices() {
@@ -81,18 +99,40 @@ async function run(device, apkPath, testApkPath) {
   let testLaunch = await launchTest(device, testPackageName)
   let uninstallApp = await uninstallApk(device, packageName)
   let uninstallTestApp = await uninstallApk(device, testPackageName)
-  return [start, appInstall, testAppInstall, testLaunch, uninstallApp, uninstallTestApp]
+  return testLaunch
+}
+async function runOnSpoon(device, apkPath, testApkPath){
+  let packageName = await getPackageNameOfApp(apkPath)
+  let testPackageName = await getPackageNameOfApp(testApkPath)
+  let start = await execute('adb start-server')
+  let testLaunch = await launchTestOnSpoon(device,apkPath,testApkPath)
+  await uninstallApk(item, packageName)
+  await uninstallApk(item, testPackageName)
+  return testLaunch
 }
 
 async function enqueue(devices, apkPath, testApkPath) {
   let resultArray = []
   for (const item of devices) {
-    let tmpResult = await run(item,apkPath,testApkPath)
+    let tmpResult = run(item,apkPath,testApkPath)
     resultArray.push(tmpResult)
   }
-  return resultArray
+  return Promise.all(resultArray).then(r=>{
+    return r
+  })
+}
+async function enqueueOnSpoon(devices, apkPath, testApkPath) {
+  let resultArray = []
+  for (const item of devices) {
+    let tmpResult = runOnSpoon(item,apkPath,testApkPath)
+    resultArray.push(tmpResult)
+  }
+  return Promise.all(resultArray).then(r=>{
+    return r
+  })
 }
 module.exports = {
   getConnectedDevices,
-  enqueue
+  enqueue,
+  enqueueOnSpoon
 }

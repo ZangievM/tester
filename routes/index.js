@@ -13,25 +13,27 @@ router.get('/', function(req, res, next) {
   
 });
 router.post('/', function(req, res, next) {
+  let x = req.body.devices
   var form = new formidable.IncomingForm();
+  let devices = []
+  form.on('field', function(name, value) {
+    devices.push(value)
+    
+  });
   form.parse(req, function (err, fields, files) {
     if(err) {
       console.log(err);
       return
       
     }
-    let devices = [].concat(fields.devices)
     var filePath = files.file.path+'.apk';
     var testFilePath = files.testFile.path+'.apk';
     fs.renameSync(files.file.path, filePath)
     fs.renameSync(files.testFile.path, testFilePath)
-    launcher.enqueue(devices,filePath,testFilePath)
+    launcher.enqueueOnSpoon(devices,filePath,testFilePath)
     .then(result=>{
       res.json(result)
     })
-    
-
-
   })
 })
 module.exports = router
