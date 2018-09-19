@@ -57,30 +57,40 @@ var createTestRuns = (devices, apkPath, testApkPath) => {
         let tmp = new TestRun(item, apkPath, testApkPath)
         result.push(tmp)
     }
-    return result
-    
+    tests.push(result)
+    enqueueOnSpoon(result)
+
 }
 async function enqueue(testRuns) {
-    let test = tests.find(element=> element.id===id)
     let resultArray = []
-    for (const item of testdevices) {
-      let tmpResult = launcher.run(item,apkPath,testApkPath)
-      resultArray.push(tmpResult)
+    for (const item of testRuns) {
+        let tmpResult = launcher.run(item.device, item.apkPath, item.testApkPath)
+        item.start()
+        resultArray.push(tmpResult)
     }
-    return Promise.all(resultArray).then(r=>{
-      return r
+    return Promise.all(resultArray).then(r => {
+        for (let i = 0; i < r.length; i++) {
+            const element = r[i];
+            testRuns[i].stop()
+        }
+        return r
     })
-  }
-  async function enqueueOnSpoon(testRuns) {
+}
+async function enqueueOnSpoon(testRuns) {
     let resultArray = []
-    for (const item of devices) {
-      let tmpResult = launcher.runOnSpoon(item,apkPath,testApkPath)
-      resultArray.push(tmpResult)
+    for (const item of testRuns) {
+        let tmpResult = launcher.runOnSpoon(item.device, item.apkPath, item.testApkPath)
+        item.start()
+        resultArray.push(tmpResult)
     }
-    return Promise.all(resultArray).then(r=>{
-      return r
+    return Promise.all(resultArray).then(r => {
+        for (let i = 0; i < r.length; i++) {
+            const element = r[i];
+            testRuns[i].stop()
+        }
+        return r
     })
-  }
+}
 
 async function refreshDevices() {
     let result = await launcher.getConnectedDevices()
