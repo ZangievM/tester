@@ -2,10 +2,11 @@ const fs = require('fs')
 const util = require('util')
 const replacer = util.promisify(fs.rename)
 const remover = util.promisify(fs.unlink)
+const path = require('path')
 var rootPath =  __dirname.replace('data',"")
 var spoonPath = ''
 var cachePath = ''
-const parseRoot = path.parse(spoonPath)
+const parseRoot = path.parse(rootPath)
 
 if (parseRoot.root[0] >= 'a' && parseRoot.root[0] <= 'z'){
     rootPath = rootPath.replace(parseRoot.root[0], parseRoot.root[0].toUpperCase())
