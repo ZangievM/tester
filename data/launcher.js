@@ -5,13 +5,7 @@ const uuid = require('uuid').v1
 const util = require('util')
 const fileSystem = require('./fileSystem')
 const mkdir = util.promisify(fs.mkdir)
-var spoonPath = __dirname.replace('data','helpers')+'\\'
-var cachePath = ''
-const parseSpoonPath = path.parse(spoonPath)
-
-if(parseSpoonPath.root[0]>='a' && parseSpoonPath.root[0]<='z') 
-spoonPath = spoonPath.replace(parseSpoonPath.root[0],parseSpoonPath.root[0].toUpperCase())
-cachePath = spoonPath.replace('helpres','cache')
+const spoonPath = fileSystem.spoonPath
 
 function execute(command, cwd) {
   let options = {
@@ -131,6 +125,8 @@ async function enqueueOnSpoon(devices, apkPath, testApkPath) {
 }
 module.exports = {
   getConnectedDevices,
+  run,
+  runOnSpoon,
   enqueue,
   enqueueOnSpoon
 }

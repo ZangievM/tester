@@ -33,7 +33,7 @@ class Device {
 class TestRun {
     constructor(devices, apkPath, testApkPath) {
         this.id = uuid()
-        this.devices = devices
+        this.device = device
         this.apkPath = apkPath
         this.testApkPath = testApkPath
         this.status = 'none'
@@ -51,25 +51,36 @@ class TestRun {
     }
 }
 
-var enqueue = function (testRun) {
-    tests.push(testRun)
-    let flag = false
-    queue.forEach(element => {
-        element.devices.forEach(device => {
-
-        })
+var createTestRuns = (devices, apkPath, testApkPath) => {
+    let result = []
+    for (const item of devices) {
+        let tmp = new TestRun(item, apkPath, testApkPath)
+        result.push(tmp)
+    }
+    return result
+    
+}
+async function enqueue(testRuns) {
+    let test = tests.find(element=> element.id===id)
+    let resultArray = []
+    for (const item of testdevices) {
+      let tmpResult = launcher.run(item,apkPath,testApkPath)
+      resultArray.push(tmpResult)
+    }
+    return Promise.all(resultArray).then(r=>{
+      return r
     })
-
-}
-
-function next(device) {
-
-}
-
-var createTestRun = (devices, apkPath, testApkPath) => {
-    let tmp = new TestRun(devices, apkPath, testApkPath)
-    enqueue(tmp)
-}
+  }
+  async function enqueueOnSpoon(testRuns) {
+    let resultArray = []
+    for (const item of devices) {
+      let tmpResult = launcher.runOnSpoon(item,apkPath,testApkPath)
+      resultArray.push(tmpResult)
+    }
+    return Promise.all(resultArray).then(r=>{
+      return r
+    })
+  }
 
 async function refreshDevices() {
     let result = await launcher.getConnectedDevices()
@@ -77,12 +88,15 @@ async function refreshDevices() {
     result.forEach(device => {
         devices.push(new Device(device))
     })
-    
+
 }
 setInterval(() => {
     refreshDevices()
 }, 5000)
 module.exports = {
     Device,
-    TestRun
+    TestRun,
+    createTestRun,
+    enqueueOnSpoon,
+    enqueue
 }
