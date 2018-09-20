@@ -1,6 +1,12 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #414b55!important;
+}
+label{
+  color: white;
+}
+form {
+  padding-left: 50px
 }
 
 a {

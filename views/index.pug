@@ -3,6 +3,11 @@ extends layout
 block content
   script.
     $('select').selectpicker();
+  nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+            a.navbar-brand(href='/') XOGame BMS
+            ul.navbar-nav
+                li.nav-item
+                    a.nav-link(href='/newTest') Add new Test 
   form(action="?", method="post" enctype="multipart/form-data" onsubmit="submit()")
     label Select devices
     br
