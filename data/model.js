@@ -51,7 +51,7 @@ class TestRun {
     }
 }
 
-var createTestRuns = (devices, apkPath, testApkPath) => {
+async function createTestRuns(devices, apkPath, testApkPath) {
     let result = []
     for (const item of devices) {
         let tmp = new TestRun(item, apkPath, testApkPath)
@@ -106,7 +106,7 @@ setInterval(() => {
 module.exports = {
     Device,
     TestRun,
-    createTestRun,
+    createTestRuns,
     enqueueOnSpoon,
     enqueue
 }

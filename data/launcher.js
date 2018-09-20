@@ -36,8 +36,8 @@ async function launchTest(device, packageName) {
   let result = await execute(`adb -s ${device} shell am instrument -w ${packageName}/android.support.test.runner.AndroidJUnitRunner`)
   return result
 }
-async function launchTestOnSpoon(device,apk,testApk){
-  let output = spoonPath+uuid()
+async function launchTestOnSpoon(id,device,apk,testApk){
+  let output = spoonPath+id
   let result = await execute(`java -jar spoon-runner-1.7.1-jar-with-dependencies.jar --apk ${apk} --test-apk ${testApk} -serial ${device} --shard --output ${output}`,spoonPath)
   return result
 }
@@ -93,11 +93,11 @@ async function run(device, apkPath, testApkPath) {
   let uninstallTestApp = await uninstallApk(device, testPackageName)
   return testLaunch
 }
-async function runOnSpoon(device, apkPath, testApkPath){
+async function runOnSpoon(id,device, apkPath, testApkPath){
   let packageName = await getPackageNameOfApp(apkPath)
   let testPackageName = await getPackageNameOfApp(testApkPath)
   let start = await execute('adb start-server')
-  let testLaunch = await launchTestOnSpoon(device,apkPath,testApkPath)
+  let testLaunch = await launchTestOnSpoon(id,device,apkPath,testApkPath)
   await uninstallApk(item, packageName)
   await uninstallApk(item, testPackageName)
   return testLaunch

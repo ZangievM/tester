@@ -4,6 +4,7 @@ var path = require('path')
 var fs = require('fs')
 var formidable = require('formidable')
 var launcher = require('../data/launcher')
+var model = require('../data/model')
 /* GET home page. */
 router.get('/', function(req, res, next) {
   launcher.getConnectedDevices()
