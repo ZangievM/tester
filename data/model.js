@@ -5,7 +5,7 @@ var fileSystem = require('./fileSystem')
 const cache = fileSystem.cachePath
 var devices = new Map()
 var tests = []
-var queue = new Map()
+var queue = []
 
 class Device {
     // constructor(id, manufacturer, model, os, sdk) {
@@ -53,17 +53,19 @@ class TestRun {
     }
 }
 
-async function createTestRuns(devices, apk, testApk) {
+function createTestRuns(devices, apk, testApk) {
     let result = []
     for (const item of devices) {
         let tmp = new TestRun(item, apk, testApk)
         result.push(tmp)
     }
     tests = tests.concat(result)
-    return await enqueueOnSpoon(result)
-
+    for (const item of result) {
+        enqueue(item)
+    }
+    
 }
-async function enqueue(testRuns) {
+async function startOnAdb(testRuns) {
     let resultArray = []
     for (const item of testRuns) {
         let tmpResult = launcher.run(item.device, item.apkPath, item.testApkPath)
@@ -80,7 +82,7 @@ async function enqueue(testRuns) {
         return r
     })
 }
-var enqueueOnSpoon =  async function(testRuns) {
+async function startOnSpoon(testRuns) {
     let resultArray = []
     for (const item of testRuns) {
         let tmpResult = launcher.runOnSpoon(item.id, item.device, item.apkPath, item.testApkPath)
@@ -91,11 +93,21 @@ var enqueueOnSpoon =  async function(testRuns) {
         for (let i = 0; i < r.length; i++) {
             const element = r[i];
             testRuns[i].stop()
+            queue.splice(queue.indexOf(testRuns[i]),1)
+            queue.next(testRuns[i].device)
             await fileSystem.remove(testRuns[i].apkPath)
             await fileSystem.remove(testRuns[i].testApkPath)
         }
         return r
     })
+}
+function enqueue(testRun){
+    queue.push(testRun)
+    next(testRun.device)
+}
+function next(device){
+    let x = queue.find(element=> element.device ===device)
+    if(x) startOnSpoon(x)
 }
 
 async function refreshDevices() {
@@ -112,7 +124,5 @@ async function refreshDevices() {
 module.exports = {
     Device,
     TestRun,
-    createTestRuns,
-    enqueueOnSpoon,
-    enqueue
+    createTestRuns
 }
