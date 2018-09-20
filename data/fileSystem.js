@@ -10,8 +10,8 @@ const parseRoot = path.parse(rootPath)
 
 if (parseRoot.root[0] >= 'a' && parseRoot.root[0] <= 'z'){
     rootPath = rootPath.replace(parseRoot.root[0], parseRoot.root[0].toUpperCase())
-    cachePath = rootPath+'\\cache'
-    spoonPath = rootPath+'\\helpers'
+    cachePath = rootPath+'cache\\'
+    spoonPath = rootPath+'helpers\\'
 }
     
 
@@ -20,14 +20,14 @@ async function replace(oldPath, newPath) {
         await replacer(oldPath, newPath)
         await remove(oldPath)
     } catch (error) {
-        console.log('Error in replace')
+        console.log('Error in replace '+error)
     }
 }
 async function remove(path) {
     try {
         await remover(path)
     } catch (error) {
-        console.log('Error in delete');
+        console.log('Error in delete '+error);
     }
 }
 module.exports = {

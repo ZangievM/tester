@@ -6,6 +6,7 @@ const util = require('util')
 const fileSystem = require('./fileSystem')
 const mkdir = util.promisify(fs.mkdir)
 const spoonPath = fileSystem.spoonPath
+const cachePath = fileSystem.cachePath
 
 function execute(command, cwd) {
   let options = {
@@ -37,7 +38,7 @@ async function launchTest(device, packageName) {
   return result
 }
 async function launchTestOnSpoon(id,device,apk,testApk){
-  let output = spoonPath+id
+  let output = cachePath+id
   let result = await execute(`java -jar spoon-runner-1.7.1-jar-with-dependencies.jar --apk ${apk} --test-apk ${testApk} -serial ${device} --shard --output ${output}`,spoonPath)
   return result
 }
@@ -98,8 +99,8 @@ async function runOnSpoon(id,device, apkPath, testApkPath){
   let testPackageName = await getPackageNameOfApp(testApkPath)
   let start = await execute('adb start-server')
   let testLaunch = await launchTestOnSpoon(id,device,apkPath,testApkPath)
-  await uninstallApk(item, packageName)
-  await uninstallApk(item, testPackageName)
+  await uninstallApk(device, packageName)
+  await uninstallApk(device, testPackageName)
   return testLaunch
 }
 

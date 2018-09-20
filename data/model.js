@@ -1,18 +1,20 @@
 var fs = require('fs')
 var uuid = require('uuid').v1
 var launcher = require('./launcher')
+var fileSystem = require('./fileSystem')
+const cache = fileSystem.cachePath
 var devices = new Map()
 var tests = []
 var queue = new Map()
 
 class Device {
-    constructor(id, manufacturer, model, os, sdk) {
-        this.id = id,
-            this.manufacturer = manufacturer
-        this.model = model
-        this.os = os
-        this.sdk = sdk
-    }
+    // constructor(id, manufacturer, model, os, sdk) {
+    //     this.id = id,
+    //         this.manufacturer = manufacturer
+    //     this.model = model
+    //     this.os = os
+    //     this.sdk = sdk
+    // }
     constructor(device) {
         this.id = device.id
         this.manufacturer = device.manufacturer
@@ -31,7 +33,7 @@ class Device {
 }
 
 class TestRun {
-    constructor(devices, apkPath, testApkPath) {
+    constructor(device, apkPath, testApkPath) {
         this.id = uuid()
         this.device = device
         this.apkPath = apkPath
@@ -51,14 +53,14 @@ class TestRun {
     }
 }
 
-async function createTestRuns(devices, apkPath, testApkPath) {
+async function createTestRuns(devices, apk, testApk) {
     let result = []
     for (const item of devices) {
-        let tmp = new TestRun(item, apkPath, testApkPath)
+        let tmp = new TestRun(item, apk, testApk)
         result.push(tmp)
     }
-    tests.push(result)
-    enqueueOnSpoon(result)
+    tests = tests.concat(result)
+    return await enqueueOnSpoon(result)
 
 }
 async function enqueue(testRuns) {
@@ -68,25 +70,29 @@ async function enqueue(testRuns) {
         item.start()
         resultArray.push(tmpResult)
     }
-    return Promise.all(resultArray).then(r => {
+    return Promise.all(resultArray).then(async r => {
         for (let i = 0; i < r.length; i++) {
             const element = r[i];
             testRuns[i].stop()
+            await fileSystem.remove(testRuns[i].apkPath)
+            await fileSystem.remove(testRuns[i].testApkPath)
         }
         return r
     })
 }
-async function enqueueOnSpoon(testRuns) {
+var enqueueOnSpoon =  async function(testRuns) {
     let resultArray = []
     for (const item of testRuns) {
-        let tmpResult = launcher.runOnSpoon(item.device, item.apkPath, item.testApkPath)
+        let tmpResult = launcher.runOnSpoon(item.id, item.device, item.apkPath, item.testApkPath)
         item.start()
         resultArray.push(tmpResult)
     }
-    return Promise.all(resultArray).then(r => {
+    return Promise.all(resultArray).then(async r => {
         for (let i = 0; i < r.length; i++) {
             const element = r[i];
             testRuns[i].stop()
+            await fileSystem.remove(testRuns[i].apkPath)
+            await fileSystem.remove(testRuns[i].testApkPath)
         }
         return r
     })
@@ -100,9 +106,9 @@ async function refreshDevices() {
     })
 
 }
-setInterval(() => {
-    refreshDevices()
-}, 5000)
+// setInterval(() => {
+//     refreshDevices()
+// }, 5000)
 module.exports = {
     Device,
     TestRun,
