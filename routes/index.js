@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const model = require('../data/model')
 const cachePath = require('../data/fileSystem').cachePath
+const fs = require('fs')
 
 
 /* GET users listing. */
@@ -12,17 +13,30 @@ router.get('/', function (req, res, next) {
     path: cachePath
   });
 });
-
+router.get('/apk/:id/:type', function (req, res, next) {
+  let id = req.params.id
+  let type = req.params.type
+  let test = model.getTest(id)
+  let file = ''
+  if (type == 'apk') file = test.apkPath
+  else file = test.testApkPath
+  res.download(file)
+});
 router.post('/', (req, res, next) => {
   let action = req.body.action
-  if (action === 'download') {
-    let id = req.body.id
-    let type = req.body.type
-    let test = model.getTest(id)
-    if (type == 'apk') res.download(test.apkPath)
-    else res.download(test.tesApkPath)
-    return
-  }
+  // if (action === 'download') {
+  //   let id = req.body.id
+  //   let type = req.body.type
+  //   let test = model.getTest(id)
+  //   let file = ''
+  //   if (type == 'apk')  file = test.apkPath
+  //   else file = test.testApkPath
+  //   // res.setHeader("Content-Type", "application/octet-stream")
+  //   // res.setHeader("Content-Disposition","attachment; filename=" + file)
+  //   // let straem = fs.createReadStream(file).pipe(res);
+  //   next()
+  //   return
+  // }
 
   if (action === 'update') {
     let testRuns = model.getTestRuns()

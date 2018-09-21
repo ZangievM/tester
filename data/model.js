@@ -80,8 +80,6 @@ async function startOnAdb(testRuns) {
         for (let i = 0; i < r.length; i++) {
             const element = r[i];
             testRuns[i].stop()
-            await fileSystem.remove(testRuns[i].apkPath)
-            await fileSystem.remove(testRuns[i].testApkPath)
         }
         return r
     })
@@ -100,8 +98,6 @@ async function startOnSpoon(tests) {
             testRuns[i].stop()
             queue.splice(queue.indexOf(testRuns[i]), 1)
             next(testRuns[i].device)
-            await fileSystem.remove(testRuns[i].apkPath)
-            await fileSystem.remove(testRuns[i].testApkPath)
         }
         return r
     })
