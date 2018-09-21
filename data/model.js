@@ -30,7 +30,7 @@ class Device {
             sdk: this.sdk
         }
     }
-    toString(){
+    toString() {
         return `${this.manufacturer} ${this.model} (Android ${this.os}, SDK ${this.sdk})`
     }
 }
@@ -67,7 +67,7 @@ function createTestRuns(devices, apk, testApk) {
     for (const item of result) {
         enqueue(item)
     }
-    
+
 }
 async function startOnAdb(testRuns) {
     let resultArray = []
@@ -98,7 +98,7 @@ async function startOnSpoon(tests) {
         for (let i = 0; i < r.length; i++) {
             const element = r[i];
             testRuns[i].stop()
-            queue.splice(queue.indexOf(testRuns[i]),1)
+            queue.splice(queue.indexOf(testRuns[i]), 1)
             next(testRuns[i].device)
             await fileSystem.remove(testRuns[i].apkPath)
             await fileSystem.remove(testRuns[i].testApkPath)
@@ -106,24 +106,31 @@ async function startOnSpoon(tests) {
         return r
     })
 }
-function enqueue(testRun){
+
+function enqueue(testRun) {
     queue.push(testRun)
     next(testRun.device)
 }
-function next(device){
-    let x = queue.find(element=> element.device ===device)
-    if(x) startOnSpoon(x)
+
+function next(device) {
+    let x = queue.find(element => element.device === device)
+    if (x) startOnSpoon(x)
 }
 
 async function refreshDevices() {
     let result = await launcher.getConnectedDevices()
     result.forEach(device => {
-        devices.set(device.id,new Device(device))
+        devices.set(device.id, new Device(device))
     })
 
 }
-function getTestRuns(){
+
+function getTestRuns() {
     return tests
+}
+
+function getTest(id) {
+    return tests.find(element => element.id === id)
 }
 setInterval(() => {
     refreshDevices()
@@ -132,5 +139,6 @@ module.exports = {
     Device,
     TestRun,
     createTestRuns,
-    getTestRuns
+    getTestRuns,
+    getTest
 }
