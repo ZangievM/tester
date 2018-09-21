@@ -24,7 +24,7 @@ block content
                         img(src='/images/apk.png', alt='Download Apk' class='apkInside')
                 td= value.status
                 td 
-                    a(id href="#") Full Report
+                    a(id href=`/report/${value.id}`) Full Report
     script.
         function downloadApk(res){
             console.log(res)
