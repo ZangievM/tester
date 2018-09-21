@@ -5,6 +5,7 @@ const cachePath = require('../data/fileSystem').cachePath
 const fs = require('fs')
 const util = require('util')
 let reader = util.promisify(fs.readFile)
+const launcher = require('../data/launcher')
 
 router.get('/', function (req, res, next) {
   let testRuns = model.getTestRuns()
@@ -15,11 +16,15 @@ router.get('/', function (req, res, next) {
 });
 router.get('/report/:id', function (req, res, next) {
   let id = req.params.id
-  let path = cachePath+id+'\\index.html'
-  reader(path,'utf-8')
-  .then(result=>{
-    res.write(result);
-  })
+  let path = cachePath+id
+  //on Windows
+  launcher.execute('start index.html',path)
+
+  //TO-DO Add execute on linux and MacOs
+  // launcher.execute('start index.html',path)
+
+  // launcher.execute('start index.html',path)
+  res.redirect('/')
   
 });
 router.get('/apk/:id/:type', function (req, res, next) {

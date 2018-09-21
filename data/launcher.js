@@ -129,5 +129,6 @@ module.exports = {
   run,
   runOnSpoon,
   enqueue,
-  enqueueOnSpoon
+  enqueueOnSpoon,
+  execute
 }
