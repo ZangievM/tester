@@ -24,20 +24,6 @@ router.get('/apk/:id/:type', function (req, res, next) {
 });
 router.post('/', (req, res, next) => {
   let action = req.body.action
-  // if (action === 'download') {
-  //   let id = req.body.id
-  //   let type = req.body.type
-  //   let test = model.getTest(id)
-  //   let file = ''
-  //   if (type == 'apk')  file = test.apkPath
-  //   else file = test.testApkPath
-  //   // res.setHeader("Content-Type", "application/octet-stream")
-  //   // res.setHeader("Content-Disposition","attachment; filename=" + file)
-  //   // let straem = fs.createReadStream(file).pipe(res);
-  //   next()
-  //   return
-  // }
-
   if (action === 'update') {
     let testRuns = model.getTestRuns()
     res.render('index', {
