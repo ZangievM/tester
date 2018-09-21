@@ -2,6 +2,14 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-color: #414b55!important;
 }
+table{
+  width:100%;
+}
+td{
+  border: 1px solid white;
+  color: white;
+  text-align: center;
+}
 label{
   color: white;
 }

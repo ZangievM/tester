@@ -14,5 +14,19 @@ block content
             td Test Apk
             td Status
             td Result
+        for value in testRuns
+            tr 
+                td= value.id
+                td= value.deviceDesc
+                td(id='downloadApk_'+value.id onclick=`downloadApk(\'${this.id}\')`)
+                    a(href="#")
+                        img(src='/images/apk.png', alt='Download Apk' class='apkInside')
+                td(id='downloadTestApk_'+value.id onclick=`downloadApk(\'${this.id}\')`)
+                    a(href="#")
+                        img(src='/images/apk.png', alt='Download Apk' class='apkInside')
+                td= value.status
+                td 
+                    a(id href="#")
+
 
     

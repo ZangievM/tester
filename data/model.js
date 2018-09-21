@@ -30,12 +30,16 @@ class Device {
             sdk: this.sdk
         }
     }
+    toString(){
+        return `${this.manufacturer} ${this.model} (Android ${this.os}, SDK ${this.sdk})`
+    }
 }
 
 class TestRun {
     constructor(device, apkPath, testApkPath) {
         this.id = uuid()
         this.device = device
+        this.deviceDesc = devices.get(device).toString()
         this.apkPath = apkPath
         this.testApkPath = testApkPath
         this.status = 'none'
@@ -82,7 +86,8 @@ async function startOnAdb(testRuns) {
         return r
     })
 }
-async function startOnSpoon(testRuns) {
+async function startOnSpoon(tests) {
+    let testRuns = [].concat(tests)
     let resultArray = []
     for (const item of testRuns) {
         let tmpResult = launcher.runOnSpoon(item.id, item.device, item.apkPath, item.testApkPath)
@@ -94,7 +99,7 @@ async function startOnSpoon(testRuns) {
             const element = r[i];
             testRuns[i].stop()
             queue.splice(queue.indexOf(testRuns[i]),1)
-            queue.next(testRuns[i].device)
+            next(testRuns[i].device)
             await fileSystem.remove(testRuns[i].apkPath)
             await fileSystem.remove(testRuns[i].testApkPath)
         }
@@ -112,18 +117,17 @@ function next(device){
 
 async function refreshDevices() {
     let result = await launcher.getConnectedDevices()
-    devices = []
     result.forEach(device => {
-        devices.push(new Device(device))
+        devices.set(device.id,new Device(device))
     })
 
 }
 function getTestRuns(){
     return tests
 }
-// setInterval(() => {
-//     refreshDevices()
-// }, 5000)
+setInterval(() => {
+    refreshDevices()
+}, 5000)
 module.exports = {
     Device,
     TestRun,
