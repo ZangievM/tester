@@ -1,42 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var path = require('path')
-var fs = require('fs')
-var formidable = require('formidable')
-var launcher = require('../data/launcher')
-var fileSystem = require('../data/fileSystem')
-var model = require('../data/model')
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  launcher.getConnectedDevices()
-  .then(result=>{
-    res.render('index', { title: 'Express',devices:result });
-  })
-  
+const model = require('../data/model')
+const cachePath = require('../data/fileSystem').cachePath
+
+
+/* GET users listing. */
+router.get('/', function (req, res, next) {
+  let testRuns = model.getTestRuns()
+  res.render('index', {
+    testRuns: testRuns,
+    path: cachePath
+  });
 });
-router.post('/', function(req, res, next) {
-  let x = req.body.devices
-  var form = new formidable.IncomingForm({ 
-    uploadDir: fileSystem.cachePath,
-    keepExtensions: true
-  });
-  let devices = []
-  form.on('field', function(name, value) {
-    devices.push(value)
-    
-  });
-  form.parse(req, function (err, fields, files) {
-    if(err) {
-      console.log(err);
-      return
-      
-    }
-    var file = files.file
-    var testFile = files.testFile
-    model.createTestRuns(devices,file.path,testFile.path)
-    .then(result=>{
-      res.json(result)
-    })
-  })
-})
-module.exports = router
+
+module.exports = router;

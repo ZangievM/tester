@@ -42,10 +42,10 @@ class TestRun {
         this.result = ''
     }
     start() {
-        this.status = 'started'
+        this.status = 'in progress...'
     }
     stop() {
-        this.status = 'stopped'
+        this.status = 'done'
     }
     setResult(result) {
         this.status = 'done'
@@ -118,11 +118,15 @@ async function refreshDevices() {
     })
 
 }
+function getTestRuns(){
+    return tests
+}
 // setInterval(() => {
 //     refreshDevices()
 // }, 5000)
 module.exports = {
     Device,
     TestRun,
-    createTestRuns
+    createTestRuns,
+    getTestRuns
 }
