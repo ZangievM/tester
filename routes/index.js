@@ -22,7 +22,7 @@ router.get('/report/:id', function (req, res, next) {
     launcher.execute('start index.html', path) //on Windows
   else
   if (platform === 'darwin')
-    launcher.execute('start index.html', path) //On MacOs
+    launcher.execute('open index.html', path) //On MacOs
   else
     launcher.execute('xdg-open index.html', path) //On Linux
   res.redirect('/')
