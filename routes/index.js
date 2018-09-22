@@ -16,16 +16,17 @@ router.get('/', function (req, res, next) {
 });
 router.get('/report/:id', function (req, res, next) {
   let id = req.params.id
-  let path = cachePath+id
-  //on Windows
-  launcher.execute('start index.html',path)
-
-  //TO-DO Add execute on linux and MacOs
-  // launcher.execute('start index.html',path)
-
-  // launcher.execute('start index.html',path)
+  let path = cachePath + id
+  let platform = process.platform
+  if (platform === 'win32')
+    launcher.execute('start index.html', path) //on Windows
+  else
+  if (platform === 'darwin')
+    launcher.execute('start index.html', path) //On MacOs
+  else
+    launcher.execute('xdg-open index.html', path) //On Linux
   res.redirect('/')
-  
+
 });
 router.get('/apk/:id/:type', function (req, res, next) {
   let id = req.params.id
