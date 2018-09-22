@@ -104,8 +104,10 @@ async function startOnSpoon(tests) {
 }
 
 function enqueue(testRun) {
+    let x = queue.find(element => element.device === device)
     queue.push(testRun)
-    next(testRun.device)
+    if(!x)
+        next(testRun.device)
 }
 
 function next(device) {
