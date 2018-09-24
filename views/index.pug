@@ -1,49 +1,79 @@
 extends layout
 
 block content
-    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+    body(onload='update()')
+        nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
             a.navbar-brand(href='/') Tester
             ul.navbar-nav
                 li.nav-item
                     a.nav-link(href='/newTest') Add new Test 
-    table
-        tr
-            td Device
-            td Apk
-            td Test Apk
-            td Status
-            td Result
-        for value in testRuns
+        table
             tr
-                td= value.deviceDesc
-                td(id='downloadApk_'+value.id)
-                    a(href=`/apk/${value.id}/apk` target="_blank" rel="noopener noreferrer")
-                        img(src='/images/apk.png', alt='Download Apk' class='apkInside')
-                td(id='downloadTestApk_'+value.id)
-                    a(href=`/apk/${value.id}/testApk` target="_blank" rel="noopener noreferrer")
-                        img(src='/images/apk.png', alt='Download Apk' class='apkInside')
-                td= value.status
-                td 
-                    a(id href=`/report/${value.id}`) Full Report
-    script.
-        function downloadApk(res){
-            console.log(res)
-            let input = res.split('_')
-            let options = {
-                action:'download',
-                id: input[1],
-                type:'apk'
+                td Device
+                td Apk
+                td Test Apk
+                td Status
+                td Result
+            for value in testRuns
+                tr
+                    td= value.deviceDesc
+                    td(id='downloadApk_'+value.id)
+                        a(href=`/apk/${value.id}/apk` target="_blank" rel="noopener noreferrer")
+                            img(src='/images/apk.png', alt='Download Apk' class='apkInside')
+                    td(id='downloadTestApk_'+value.id)
+                        a(href=`/apk/${value.id}/testApk` target="_blank" rel="noopener noreferrer")
+                            img(src='/images/apk.png', alt='Download Apk' class='apkInside')
+                    td(id=`status_${value.id}`)= value.status
+                    td 
+                        if value.status==='done'
+                            a(id=`report_${value.id}` href=`/report/${value.id}`) Full report
+                        else
+                            a(id=`report_${value.id}`) ''
+        script.
+            function downloadApk(res){
+                console.log(res)
+                let input = res.split('_')
+                let options = {
+                    action:'download',
+                    id: input[1],
+                    type:'apk'
+                }
+                if(input[0].indexOf('Test')!=-1)
+                    options.type = 'test'
+                $.ajax({
+                        type: "POST",
+                        url: "?",
+                        data: JSON.stringify(options),
+                        dataType: "json",
+                        contentType: "application/json"
+                    });
             }
-            if(input[0].indexOf('Test')!=-1)
-                options.type = 'test'
-            $.ajax({
-                    type: "POST",
-                    url: "?",
-                    data: JSON.stringify(options),
-                    dataType: "json",
-                    contentType: "application/json"
-                });
-        }
+            function update(){
+                setInterval(function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "?",
+                        data: JSON.stringify({action:'update'}),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success:function(data){
+                            let tests = data.testRuns
+                            for(let i=0;i<tests.length;i++){
+                                let status = document.getElementById(`status_${tests[i].id}`)
+                                let report = document.getElementById(`report_${tests[i].id}`)
+                                status.innerText = tests[i].status
+                                if(tests[i].status==='done'){
+                                    report.href = `/report/${tests[i].id}`
+                                    report.innerText = 'Full report'
+                                }else{
+                                    report.href = ''
+                                    report.innerText = ''
+                                }
+                            }
+                        }
+                    });
+                },4000)
+            }
 
 
-    
+        

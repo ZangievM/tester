@@ -41,7 +41,7 @@ router.post('/', (req, res, next) => {
   let action = req.body.action
   if (action === 'update') {
     let testRuns = model.getTestRuns()
-    res.render('index', {
+    res.json({
       testRuns: testRuns,
       path: cachePath
     });
