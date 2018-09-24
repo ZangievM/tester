@@ -84,21 +84,13 @@ async function startOnAdb(testRuns) {
         return r
     })
 }
-async function startOnSpoon(tests) {
-    let testRuns = [].concat(tests)
-    let resultArray = []
-    for (const item of testRuns) {
-        let tmpResult = launcher.runOnSpoon(item.id, item.device, item.apkPath, item.testApkPath)
-        item.start()
-        resultArray.push(tmpResult)
-    }
-    return Promise.all(resultArray).then(async r => {
-        for (let i = 0; i < r.length; i++) {
-            const element = r[i];
-            testRuns[i].stop()
-            queue.splice(queue.indexOf(testRuns[i]), 1)
-            next(testRuns[i].device)
-        }
+async function startOnSpoon(item) {
+    let tmpResult = launcher.runOnSpoon(item.id, item.device, item.apkPath, item.testApkPath)
+    item.start()
+    return tmpResult.then(async r => {
+            item.stop()
+            queue.splice(queue.indexOf(item), 1)
+            next(item.device)
         return r
     })
 }
