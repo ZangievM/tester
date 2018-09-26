@@ -1,12 +1,29 @@
 const exec = require('child_process').exec
+const spawn = require('child_process').spawn
 const fs = require('fs')
-const path = require('path')
-const uuid = require('uuid').v1
-const util = require('util')
 const fileSystem = require('./fileSystem')
-const mkdir = util.promisify(fs.mkdir)
+
 const spoonPath = fileSystem.spoonPath
 const cachePath = fileSystem.cachePath
+
+function createChildProcess(command, cwd) {
+  command.trim()
+  let flags = command.split(' ')
+  let action = flags.splice(0,1)[0]
+  let proc = spawn(action,flags,{cwd:cwd});
+  proc.stdout.on('data', data => {
+    console.log(`stdout: ${data}`);
+  });
+
+  proc.stderr.on('data', data => {
+    console.log(`stderr: ${data}`);
+  });
+
+  proc.on('close', code => {
+    console.log(`child process exited with code ${code}`);
+  });
+  return proc
+}
 
 function execute(command, cwd) {
   let options = {
@@ -130,5 +147,6 @@ module.exports = {
   runOnSpoon,
   enqueue,
   enqueueOnSpoon,
-  execute
+  execute,
+  createChildProcess
 }
