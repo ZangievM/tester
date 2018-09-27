@@ -51,16 +51,22 @@ block content
                             for(let i=0;i<tests.length;i++){
                                 let status = document.getElementById(`status_${tests[i].id}`)
                                 let report = document.getElementById(`report_${tests[i].id}`)
+                                let reportLink = document.getElementById(`reportLink_${tests[i].id}`)
+                                let reportImg = document.getElementById(`reportImg_${tests[i].id}`)
                                 let del = document.getElementById(`delete_${tests[i].id}`)
                                 status.innerText = tests[i].status
                                 if(tests[i].status==='done'){
                                     report.href = `/report/${tests[i].id}`
-                                    report.innerText = 'Full report'
+                                    report.innerText = 'View full report'
+                                    reportLink.href = `/download/report/${tests[i].id}`
+                                    reportImg.src = '/images/download.svg'
                                     del.href = '#'
                                     del.innerText = 'Delete'
                                 }else{
                                     report.href = ''
                                     report.innerText = ''
+                                    reportLink.href = ''
+                                    reportImg.src = '/images/loading.svg'
                                     del.href = ''
                                     del.innerText = ''
                                 }
@@ -82,6 +88,7 @@ block content
                 td Test Apk
                 td Status
                 td Result
+                td Download Report
                 td
             for value in testRuns
                 tr
@@ -95,9 +102,16 @@ block content
                     td(id=`status_${value.id}`)= value.status
                     td 
                         if value.status==='done'
-                            a(id=`report_${value.id}` href=`/report/${value.id}`) Full report
+                            a(id=`report_${value.id}` href=`/report/${value.id}`) View full report
                         else
                             a(id=`report_${value.id}`) 
+                    td(id=`downloadReport_${value.id}`)
+                        if value.status === 'done'
+                            a(id=`reportLink_${value.id}` href=`/download/report/${value.id}` target="_blank" rel="noopener noreferrer")
+                                img(id=`reportImg_${value.id}` src="/images/download.svg", alt="Download full report")
+                        else
+                            a(id=`reportLink_${value.id}` target="_blank" rel="noopener noreferrer")
+                                img(id=`reportImg_${value.id}` src="/images/loading.svg", alt="Download full report")
                     td 
                         if value.status==='done'
                             a(id=`delete_${value.id}` href=`#` onclick=`remove('${value.id}')`) Delete
