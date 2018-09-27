@@ -37,6 +37,11 @@ router.get('/apk/:id/:type', function (req, res, next) {
   else file = test.testApkPath
   res.download(file)
 });
+router.get('/download/report/:id', function (req, res, next) {
+  let id = req.params.id
+  let file = cachePath+id+'\\result.json'
+  res.download(file)
+});
 router.post('/', (req, res, next) => {
   let action = req.body.action
   if (action === 'update') {
@@ -46,6 +51,11 @@ router.post('/', (req, res, next) => {
       path: cachePath
     });
     return
+  }
+  if(action==='delete'){
+    let id = req.body.id
+    model.deleteTestRun(id)
+    res.json('success')
   }
 })
 
