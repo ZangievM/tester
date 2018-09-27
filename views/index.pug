@@ -66,8 +66,8 @@ block content
                         dataType: "json",
                         contentType: "application/json",
                         success: function(data){
-                            let child = document.getElementById(`delete_${id}`).parentNode
-                            child.parentNode.removeChild(child)
+                            let tr = document.getElementById(`delete_${id}`).parentNode
+                            tr.parentNode.removeChild(child)
                         }
                     });
             }
