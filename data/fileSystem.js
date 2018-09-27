@@ -1,7 +1,9 @@
 const fs = require('fs')
 const util = require('util')
+const rimraf = require('rimraf')
 const replacer = util.promisify(fs.rename)
 const remover = util.promisify(fs.unlink)
+const folderRemover = util.promisify(rimraf)
 const path = require('path')
 var rootPath =  __dirname.replace('data',"")
 var spoonPath = ''
@@ -30,9 +32,17 @@ async function remove(path) {
         console.log('Error in delete '+error);
     }
 }
+async function removeFolder(path){
+    try {
+        await folderRemover(path)
+    } catch (error) {
+        console.log('Error in delete folder '+error);
+    }
+}
 module.exports = {
     replace,
     remove,
     spoonPath,
-    cachePath
+    cachePath,
+    removeFolder
 }

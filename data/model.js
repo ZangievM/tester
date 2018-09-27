@@ -69,6 +69,9 @@ function createTestRuns(devices, apk, testApk) {
     }
 
 }
+function deleteTestRun(){
+    
+}
 async function startOnAdb(testRuns) {
     let resultArray = []
     for (const item of testRuns) {
