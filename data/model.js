@@ -69,8 +69,15 @@ function createTestRuns(devices, apk, testApk) {
     }
 
 }
-function deleteTestRun(){
-    
+
+async function deleteTestRun(id) {
+    let index = tests.findIndex(element => element.id === id)
+    let testRun = tests[index]
+    tests.splice(index,1)
+    await fileSystem.remove(testRun.apkPath)
+    await fileSystem.remove(testRun.testApkPath)
+    await fileSystem.removeFolder(cache+id)
+
 }
 async function startOnAdb(testRuns) {
     let resultArray = []
@@ -91,9 +98,9 @@ async function startOnSpoon(item) {
     let tmpResult = launcher.runOnSpoon(item.id, item.device, item.apkPath, item.testApkPath)
     item.start()
     return tmpResult.then(async r => {
-            item.stop()
-            queue.splice(queue.indexOf(item), 1)
-            next(item.device)
+        item.stop()
+        queue.splice(queue.indexOf(item), 1)
+        next(item.device)
         return r
     })
 }
@@ -101,7 +108,7 @@ async function startOnSpoon(item) {
 function enqueue(testRun) {
     let x = queue.find(element => element.device === device)
     queue.push(testRun)
-    if(!x)
+    if (!x)
         next(testRun.device)
 }
 
@@ -133,5 +140,6 @@ module.exports = {
     TestRun,
     createTestRuns,
     getTestRuns,
-    getTest
+    getTest,
+    deleteTestRun
 }

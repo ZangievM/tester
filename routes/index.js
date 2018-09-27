@@ -48,7 +48,9 @@ router.post('/', (req, res, next) => {
     return
   }
   if(action==='delete'){
-    
+    let id = req.body.id
+    model.deleteTestRun(id)
+    res.json('success')
   }
 })
 
