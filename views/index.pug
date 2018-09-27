@@ -1,6 +1,74 @@
 extends layout
 
 block content
+    head
+        script.
+            function downloadApk(res){
+                console.log(res)
+                let input = res.split('_')
+                let options = {
+                    action:'download',
+                    id: input[1],
+                    type:'apk'
+                }
+                if(input[0].indexOf('Test')!=-1)
+                    options.type = 'test'
+                $.ajax({
+                        type: "POST",
+                        url: "?",
+                        data: JSON.stringify(options),
+                        dataType: "json",
+                        contentType: "application/json"
+                    });
+            }
+            function remove(id){
+                let options = {
+                    action:'delete',
+                    id:id
+                }
+                $.ajax({
+                        type: "POST",
+                        url: "?",
+                        data: JSON.stringify(options),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function(data){
+                            let tr = document.getElementById(`delete_${id}`).parentNode.parentNode
+                            tr.parentNode.removeChild(tr)
+                        }
+                    });
+            }
+            function update(){
+                setInterval(function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "?",
+                        data: JSON.stringify({action:'update'}),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success:function(data){
+                            let tests = data.testRuns
+                            for(let i=0;i<tests.length;i++){
+                                let status = document.getElementById(`status_${tests[i].id}`)
+                                let report = document.getElementById(`report_${tests[i].id}`)
+                                let del = document.getElementById(`delete_${tests[i].id}`)
+                                status.innerText = tests[i].status
+                                if(tests[i].status==='done'){
+                                    report.href = `/report/${tests[i].id}`
+                                    report.innerText = 'Full report'
+                                    del.href = '#'
+                                    del.innerText = 'Delete'
+                                }else{
+                                    report.href = ''
+                                    report.innerText = ''
+                                    del.href = ''
+                                    del.innerText = ''
+                                }
+                            }
+                        }
+                    });
+                },4000)
+            }        
     body(onload='update()')
         nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
             a.navbar-brand(href='/') Tester
@@ -29,79 +97,9 @@ block content
                         if value.status==='done'
                             a(id=`report_${value.id}` href=`/report/${value.id}`) Full report
                         else
-                            a(id=`report_${value.id}`) ''
+                            a(id=`report_${value.id}`) 
                     td 
                         if value.status==='done'
-                            a(id=`delete_${value.id}` href=`#` onclick=`delete(${value.id})`) Delete
+                            a(id=`delete_${value.id}` href=`#` onclick=`remove('${value.id}')`) Delete
                         else
-                            a(id=`delete_${value.id}`) 'in progress...'
-        script.
-            function downloadApk(res){
-                console.log(res)
-                let input = res.split('_')
-                let options = {
-                    action:'download',
-                    id: input[1],
-                    type:'apk'
-                }
-                if(input[0].indexOf('Test')!=-1)
-                    options.type = 'test'
-                $.ajax({
-                        type: "POST",
-                        url: "?",
-                        data: JSON.stringify(options),
-                        dataType: "json",
-                        contentType: "application/json"
-                    });
-            }
-            function delete(id){
-                let options = {
-                    action:'delete',
-                    id:id
-                }
-                $.ajax({
-                        type: "POST",
-                        url: "?",
-                        data: JSON.stringify(options),
-                        dataType: "json",
-                        contentType: "application/json",
-                        success: function(data){
-                            let tr = document.getElementById(`delete_${id}`).parentNode
-                            tr.parentNode.removeChild(child)
-                        }
-                    });
-            }
-            function update(){
-                setInterval(function(){
-                    $.ajax({
-                        type: "POST",
-                        url: "?",
-                        data: JSON.stringify({action:'update'}),
-                        dataType: "json",
-                        contentType: "application/json",
-                        success:function(data){
-                            let tests = data.testRuns
-                            for(let i=0;i<tests.length;i++){
-                                let status = document.getElementById(`status_${tests[i].id}`)
-                                let report = document.getElementById(`report_${tests[i].id}`)
-                                let delete = document.getElementById(`delete_${tests[i].id}`)
-                                status.innerText = tests[i].status
-                                if(tests[i].status==='done'){
-                                    report.href = `/report/${tests[i].id}`
-                                    report.innerText = 'Full report'
-                                    delete.href = '#'
-                                    delete.innerText = 'Delete'
-                                }else{
-                                    report.href = ''
-                                    report.innerText = 'in progress...'
-                                    delete.href = ''
-                                    delete.innerText = ''
-                                }
-                            }
-                        }
-                    });
-                },4000)
-            }
-
-
-        
+                            a(id=`delete_${value.id}`) 
