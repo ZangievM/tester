@@ -1,5 +1,5 @@
 # Tester
-Tester is a clossplatform client for launching distributed instrumented tests on Android devices.
+```Tester``` is a clossplatform client for launching distributed instrumented tests on Android devices.
 
 It is an early prototype, but in short time it will be ready to use!
 
@@ -11,6 +11,9 @@ It is an early prototype, but in short time it will be ready to use!
  - Set JAVA_HOME system variable
  - clone this repo
  - install needed packaged via ```npm install```
+ 
+### Important!
+Before bulding your ```apk``` file set ```android:testOnly = true``` in manifest file
  
  
  After this steps you should run app via ```npm start``` and open your browser on [localhost:3000](http://localhost:3000/) page
