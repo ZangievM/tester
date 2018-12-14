@@ -2,10 +2,13 @@ var fs = require('fs')
 var uuid = require('uuid').v1
 var launcher = require('./launcher')
 var fileSystem = require('./fileSystem')
+var database = require('./localDatabase')
+var io = require('./io')
 const cache = fileSystem.cachePath
 var devices = new Map()
 var tests = []
 var queue = []
+
 
 class Device {
     // constructor(id, manufacturer, model, os, sdk) {
@@ -24,6 +27,7 @@ class Device {
     }
     toPojo() {
         return {
+            id:this.id,
             manufacturer: this.manufacturer,
             model: this.model,
             os: this.os,
@@ -55,6 +59,9 @@ class TestRun {
         this.status = 'done'
         this.result = result
     }
+    toPojo(){
+        
+    }
 }
 
 function createTestRuns(devices, apk, testApk) {
@@ -77,6 +84,7 @@ async function deleteTestRun(id) {
     await fileSystem.remove(testRun.apkPath)
     await fileSystem.remove(testRun.testApkPath)
     await fileSystem.removeFolder(cache+id)
+    // await database.remove(testRun.toPojo())
 
 }
 async function startOnAdb(testRuns) {
