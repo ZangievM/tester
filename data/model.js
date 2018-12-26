@@ -126,6 +126,7 @@ function next(device) {
 }
 
 async function refreshDevices() {
+    devices.clear()
     let result = await launcher.getConnectedDevices()
     result.forEach(device => {
         devices.set(device.id, new Device(device))
