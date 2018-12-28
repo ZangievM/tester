@@ -1,9 +1,19 @@
-var socket = require('socket.io-client')('http://localhost:7000')
-const token = 'eWQtn4I5iqlmGcxARecuWJwW5jnwzTcH'
-const clientID = 'admin'
-var model  = require('./model')
+var userData = {
+    token: 'eWQtn4I5iqlmGcxARecuWJwW5jnwzTcH',
+    clientID: 'admin',
+    socketID: ''
+}
+var model = require('./model')
+var socket = require('socket.io-client')('http://localhost:7000', {
+    query: {
+        token: userData.token,
+        clientID: userData.clientID
+    }
+})
+
 socket.on('connect', function () {
-    socket.emit('register',clientID,token,socket.id)
+    userData.socketID = socket.id
+    emit('devices',model.getDevices())
 });
 socket.on('testrun', function (data) {
     console.log(data);

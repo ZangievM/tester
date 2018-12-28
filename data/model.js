@@ -3,7 +3,7 @@ var uuid = require('uuid').v1
 var launcher = require('./launcher')
 var fileSystem = require('./fileSystem')
 var database = require('./localDatabase')
-var io = require('./io')
+// var io = require('./io')
 const cache = fileSystem.cachePath
 var devices = new Map()
 var tests = []
@@ -27,7 +27,7 @@ class Device {
     }
     toPojo() {
         return {
-            id:this.id,
+            id: this.id,
             manufacturer: this.manufacturer,
             model: this.model,
             os: this.os,
@@ -59,8 +59,8 @@ class TestRun {
         this.status = 'done'
         this.result = result
     }
-    toPojo(){
-        
+    toPojo() {
+
     }
 }
 
@@ -80,10 +80,10 @@ function createTestRuns(devices, apk, testApk) {
 async function deleteTestRun(id) {
     let index = tests.findIndex(element => element.id === id)
     let testRun = tests[index]
-    tests.splice(index,1)
+    tests.splice(index, 1)
     await fileSystem.remove(testRun.apkPath)
     await fileSystem.remove(testRun.testApkPath)
-    await fileSystem.removeFolder(cache+id)
+    await fileSystem.removeFolder(cache + id)
     // await database.remove(testRun.toPojo())
 
 }
@@ -134,6 +134,10 @@ async function refreshDevices() {
 
 }
 
+function getDevices() {
+    return [...devices.values()]
+}
+
 function getTestRuns() {
     return tests
 }
@@ -150,5 +154,6 @@ module.exports = {
     createTestRuns,
     getTestRuns,
     getTest,
-    deleteTestRun
+    deleteTestRun,
+    getDevices
 }
