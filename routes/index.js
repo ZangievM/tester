@@ -19,12 +19,15 @@ router.get('/report/:id', function (req, res, next) {
   let path = cachePath + id
   let platform = process.platform
   if (platform === 'win32')
-    launcher.execute('start index.html', path) //on Windows
+  //on  Windows
+    launcher.execute('start index.html', path) 
   else
   if (platform === 'darwin')
-    launcher.execute('open index.html', path) //On MacOs
+  //On MacOs
+    launcher.execute('open index.html', path) 
   else
-    launcher.execute('xdg-open index.html', path) //On Linux
+  //On Linux
+    launcher.execute('xdg-open index.html', path) 
   res.redirect('/')
 
 });

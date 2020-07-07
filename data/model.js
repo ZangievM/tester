@@ -88,13 +88,13 @@ async function deleteTestRun(id) {
 
 }
 async function startOnAdb(testRuns) {
-    let resultArray = []
+    let array = []
     for (const item of testRuns) {
         let tmpResult = launcher.run(item.device, item.apkPath, item.testApkPath)
         item.start()
-        resultArray.push(tmpResult)
+        array.push(tmpResult)
     }
-    return Promise.all(resultArray).then(async r => {
+    return Promise.all(array).then(async r => {
         for (let i = 0; i < r.length; i++) {
             const element = r[i];
             testRuns[i].stop()
